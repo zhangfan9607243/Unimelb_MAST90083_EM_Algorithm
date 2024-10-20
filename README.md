@@ -1,1 +1,1 @@
-# unimelb_mast90083_em_algorithm
+# Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
