@@ -19,7 +19,7 @@ image(I, col = gray((0:255)/255))
 plot(density(I))
 ```
 
-
+![3614ac73-4555-49ee-91b1-b77ecd26799f](https://github.com/user-attachments/assets/1d99d2d2-12ca-45cd-89c7-ac2818b3593e)
 
 In case of a Gaussian Mixture Model (GGM) $Y_i$ with 3 components, we have $Y_i|Z_i=k \sim N(\mu_k,\sigma^2_k)$, where $Z_i$ takes values $1,2,3$, with probability $\pi_1, \pi_2, 1-\pi_1-\pi_2$ respectively. The parameters to be estimated by EM algorithm is $\theta = (\pi_1, \pi_2,\mu_1,\mu_2,\mu_3,\sigma^2_1,\sigma^2_2,\sigma^2_3)$.
 
