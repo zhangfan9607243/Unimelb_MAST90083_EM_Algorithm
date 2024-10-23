@@ -1,5 +1,3 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
 # Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
 
 First, we import necessary packages and load data into R.
@@ -27,47 +25,18 @@ In case of a Gaussian Mixture Model (GGM) $Y_i$ with 3 components, we have $Y_i|
 
 The joint pdf of $Y_i$ and $Z_i$ is:
 
-$$
-\begin{aligned}
+![CodeCogsEqn](https://github.com/user-attachments/assets/b4654c3f-ab55-4e68-a2f9-f39acf97dc5e)
 
-f(y_i,z_i|\theta)&=f(y_i|z_i,\theta)f(z_i|\theta)\\
-
-&=\prod_{k=1}^{3}[f(y_i|z_i=k,\theta)f(z_i=k|\theta)]^{I(Z_i=k)}\\
-
-&=\prod_{k=1}^{3}[f(y_i|z_i=k,\theta)\pi_k]^{I(Z_i=k)}\\
-
-\end{aligned}
-$$
 
 The complete log likelihood function is:
 
-$$
-\begin{aligned}
+![CodeCogsEqn (1)](https://github.com/user-attachments/assets/ff4af5dc-0fce-40a2-b3b2-9901c36f36e9)
 
-log[f(Y,Z|\theta)]&=log[\prod_{i=1}^{n} f(y_i,z_i|\theta)]\\
-
-&=\sum_{i=1}^{n} log[f(y_i,z_i|\theta)]\\
-
-&=\sum_{i=1}^{n}\sum_{k=1}^{3}I(Z_i=k)(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-\end{aligned}
-$$
 
 In E-step of EM algorithm, the expectation of complete log likelihood function is:
 
-$$
-\begin{aligned}
+![CodeCogsEqn (2)](https://github.com/user-attachments/assets/7e4cbe72-d0fb-4e77-abd3-fe96511c39b9)
 
-Q(\theta|\theta^{(m)})&=E(log[f(Y,Z|\theta)]|Y,\theta)\\
-
-&=E(\sum_{i=1}^{n}\sum_{k=1}^{3}I(Z_i=k)(log(\pi_k)+log(f(y_i|z_i=k,\theta)))|Y,\theta^{(m)})\\
-
-&=\sum_{i=1}^{n}\sum_{k=1}^{3}E(I(Z_i=k)|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-&=\sum_{i=1}^{n}\sum_{k=1}^{3}P(Z_i=k|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-\end{aligned}
-$$
 
 In M-step of EM algorithm, we take derivative of $Q(\theta|\theta^{(m)})$ w.r.t each parameters in $\theta = (\pi_1, \pi_2,\mu_1,\mu_2,\mu_3,\sigma^2_1,\sigma^2_2,\sigma^2_3)$ to derive expressions for estimators.
 
