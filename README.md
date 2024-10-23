@@ -1,3 +1,5 @@
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 # Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
 
 First, we import necessary packages and load data into R.
@@ -127,7 +129,7 @@ $$
 
 In terms of $\sigma^2_j$'s, for $j=1,2,3$:
 
-$
+$$
 \begin{aligned}
 
 \frac{\partial Q}{\partial\sigma^2_j}&=\frac{\partial}{\partial\sigma^2_j}\sum_{i=1}^{n}\sum_{k=1}^{3}P(Z_i=k|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
@@ -139,7 +141,7 @@ $
 &=\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})(-\frac{1}{2\sigma^2_j}+\frac{(y_i-\mu_j)^2}{2(\sigma^2_j)^2})=0\\
 
 \end{aligned}
-$
+$$
 
 Solving this equation gives us, at (m+1)th round of iteration, for $j=1,2,3$:
 
