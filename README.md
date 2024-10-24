@@ -1,5 +1,9 @@
 # Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
 
+In this project, we will implement the Expectation-Maximization (EM) algorithm to model the intensity distribution of an image. Specifically, we assume that the grayscale values of all pixels in the image follow a Gaussian Mixture Model (GMM) using three probability density functions (PDFs) with varying standard deviations, corresponding to the person, the camera, and the background. 
+
+The task involves first implementing the EM algorithm for GMM and then applying it iteratively to the image data to estimate the parameters (means, standard deviations, and mixing probabilities) for each Gaussian component. Additionally, the final part of the project requires assigning each pixel in the image to one of the Gaussian distributions based on the estimated parameters and visualizing the labeled image to compare it with the provided reference output. The complete code is included in 'em_algorithm.r'.
+
 First, we import necessary packages and load data into R.
 
 ```{r
