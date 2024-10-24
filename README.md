@@ -4,18 +4,18 @@ First, we import necessary packages and load data into R.
 
 ```{r
 # Packages
-library(plot.matrix) 
+library(plot.matrix)
 library(png)
 library(fields)
 
 # Image data
-I = readPNG("CM.png")
-I = I [,,1]
-I = t(apply(I,2,rev))
+I <- readPNG("CM.png")
+I <- I[, , 1]
+I <- t(apply(I, 2, rev))
 
 # Plot inmage and density of image data
-par(mfrow = c(1,2))
-image(I, col = gray((0:255)/255))
+par(mfrow = c(1, 2))
+image(I, col = gray((0:255) / 255))
 plot(density(I))
 ```
 
@@ -42,81 +42,38 @@ In M-step of EM algorithm, we take derivative of $Q(\theta|\theta^{(m)})$ w.r.t 
 
 In terms of $\pi_j's$, for $j=1,2$ (we have $\pi_3=1-\pi_1-\pi_2$):
 
-$$
-\begin{aligned}
+![CodeCogsEqn (3)](https://github.com/user-attachments/assets/f8422a5f-77b3-42df-a329-c1063d240088)
 
-\frac{\partial Q}{\partial\pi_j}&=\frac{\partial}{\partial\pi_j}\sum_{i=1}^{n}\sum_{k=1}^{3}P(Z_i=k|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-&=\frac{\partial}{\partial\pi_j}\sum_{i=1}^{n}[P(Z_i=j|Y,\theta^{(m)})log(\pi_j)+P(Z_i=3|Y,\theta^{(m)})log(\pi_3)]\\
-
-&=\sum_{i=1}^{n}[\frac{P(Z_i=j|Y,\theta^{(m)})}{\pi_j}-\frac{P(Z_i=3|Y,\theta^{(m)})}{\pi_3}]=0\\
-
-\Longrightarrow& \pi_3\sum_{i=1}^{n}P(Z_i=j|Y,\theta^{(m)})=\pi_j\sum_{i=1}^{n}P(Z_i=3|Y,\theta^{(m)})
-
-\end{aligned}
-$$
 
 Then, we have a equation system with 2 equations and 2 unknowns.
 
-$$
-\begin{cases}\pi_3\sum_{i=1}^{n}P(Z_i=1|Y,\theta^{(m)})=\pi_1\sum_{i=1}^{n}P(Z_i=3|Y,\theta^{(m)})\\ \pi_3\sum_{i=1}^{n}P(Z_i=2|Y,\theta^{(m)})=\pi_2\sum_{i=1}^{n}P(Z_i=3|Y,\theta^{(m)})\\ 
+![CodeCogsEqn (4)](https://github.com/user-attachments/assets/8449b715-2cb0-44ba-8b05-368abdc95fda)
 
-\pi_3=1-\pi_1-\pi_2\\
-
-\end{cases}
-$$
 
 Solving this system give us, at (m+1)th round of iteration, for $j=1,2,3$:
 
-$$
-\hat{\pi}^{(m+1)}_k=\frac{1}{n}\sum_{i=1}^{n} P(Z_i=k|Y,\theta^{(m)})
-$$
+![CodeCogsEqn (5)](https://github.com/user-attachments/assets/0385f238-a3c3-4511-bef6-8af649099e1f)
+
 
 In terms of $\mu_j's$, for $j=1,2,3$:
 
-$$
-\begin{aligned}
+![CodeCogsEqn (6)](https://github.com/user-attachments/assets/9b89a823-e1c3-4c99-b325-95f63e43f3aa)
 
-\frac{\partial Q}{\partial\mu_j}&=\frac{\partial}{\partial\mu_j}\sum_{i=1}^{n}\sum_{k=1}^{3}P(Z_i=k|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-&= \frac{\partial}{\partial\mu_j}\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})(log(\pi_j)+log(\frac{1}{\sqrt{2\pi\sigma^2_j}}exp(-\frac{(y_i-\mu_j)^2}{2\sigma^2_j})))\\
-
-&=\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})\frac{\partial}{\partial\mu_j}(-\frac{(y_i-\mu_j)^2}{2\sigma^2_j})\\
-
-&=\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})(-\frac{1}{2\sigma^2_j})(-2(y_i-\mu_j))\\
-
-&= (\frac{1}{\sigma^2_j})[\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})y_i-\mu_j\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})]=0\\
-
-\end{aligned}
-$$
 
 Solving this equation gives us, at (m+1)th round of iteration, for $j=1,2,3$:
 
-$$
-\hat{\mu}^{(m+1)}_k=\frac{\sum_{i=1}^{n} P(Z_i=k|Y,\theta^{(m)})y_i}{\sum_{i=1}^{n} P(Z_i=k|Y,\theta^{(m)})}
-$$
+![CodeCogsEqn (7)](https://github.com/user-attachments/assets/be6e2ada-b24e-4136-ae9b-ccf9122d63d7)
+
 
 In terms of $\sigma^2_j$'s, for $j=1,2,3$:
 
-$$
-\begin{aligned}
+![CodeCogsEqn (8)](https://github.com/user-attachments/assets/f16b4d42-6bd3-4bc1-9204-c9004910f754)
 
-\frac{\partial Q}{\partial\sigma^2_j}&=\frac{\partial}{\partial\sigma^2_j}\sum_{i=1}^{n}\sum_{k=1}^{3}P(Z_i=k|Y,\theta^{(m)})(log(\pi_k)+log(f(y_i|z_i=k,\theta)))\\
-
-&= \frac{\partial}{\partial\sigma^2_j}\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})(log(\pi_j)+log(\frac{1}{\sqrt{2\pi\sigma^2_j}}exp(-\frac{(y_i-\mu_j)^2}{2\sigma^2_j})))\\
-
-&= \sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})\frac{\partial}{\partial\sigma^2_j}(-\frac{1}{2}log(2\pi\sigma^2_j)-\frac{(y_i-\mu_j)^2}{2\sigma^2_j})\\
-
-&=\sum_{i=1}^{n} P(Z_i=j|Y,\theta^{(m)})(-\frac{1}{2\sigma^2_j}+\frac{(y_i-\mu_j)^2}{2(\sigma^2_j)^2})=0\\
-
-\end{aligned}
-$$
 
 Solving this equation gives us, at (m+1)th round of iteration, for $j=1,2,3$:
 
-$$
-\hat{\sigma}^{2(m+1)}_k=\frac{\sum_{i=1}^{n} P(Z_i=k|Y,\theta^{(m)})(y_i-\hat{\mu}^{(m+1)}_k)^2}{\sum_{i=1}^{n} P(Z_i=k|Y,\theta^{(m)})}
-$$
+![CodeCogsEqn (9)](https://github.com/user-attachments/assets/5d97024e-26ee-4808-8e3e-8c452e40e727)
+
 
 Having parameter estimations, in each round of iteration, we can implement EM algorithm in R. First, we build function of EM algorithm:
 
@@ -244,6 +201,9 @@ rownames(para_estimation) = paste("Iter", 0:(nrow(para_estimation)-1))
 print(para_estimation)
 ```
 
+<img width="508" alt="截屏2024-10-24 08 09 26" src="https://github.com/user-attachments/assets/9b896240-bc5d-4c37-9050-8bc85692835f">
+
+
 Then, we look at the final parameter estimated.
 
 ```{r}
@@ -255,6 +215,9 @@ p_final = EM_estimation$w.iter[nrow(EM_estimation$w.iter),]
 # Show the parameter estimation
 print(round(c(mu_final, sigma_final, p_final),4))
 ```
+
+<img width="487" alt="截屏2024-10-24 08 10 24" src="https://github.com/user-attachments/assets/495a25dd-5142-440e-a866-cbca01ab4132">
+
 
 Therefore, the parameter estimated $\hat{\theta} = (\hat{\pi}_1=0.2448, \hat{\pi}_2=0.5047,\hat{\pi}_3=0.2505,\hat{\mu}_1=0.2185,\hat{\mu}_2=0.8429,\hat{\mu}_3=0.7089,\hat{\sigma}^2_1=0.0572^2,\hat{\sigma}^2_2=0.0346^2,\hat{\sigma}^2_3=0.1628^2)$
 
@@ -279,3 +242,5 @@ Then we plot the labeled pixels.
 image.plot(matrix(G, 398, 398))
 image.plot(matrix(pdf, 398, 398))
 ```
+
+![6c14b3b9-1633-414a-8f19-fb6fc9268669](https://github.com/user-attachments/assets/8a4e0735-5b57-480a-8dee-ac54021c8c56)
