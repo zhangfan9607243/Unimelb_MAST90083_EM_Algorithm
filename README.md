@@ -79,91 +79,87 @@ Having parameter estimations, in each round of iteration, we can implement EM al
 
 ```{r}
 # EM algorithm function
-GGM.EM = function(X, w.init, mu.init, sigmasq.init, G) {
+GGM.EM <- function(X, w_init, mu_init, sigmasq_init, G) {
   # parameter X: data
-  # parameter w.init: initial value of pi
-  # parameter mu.init: initial value of mu
-  # parameter sigmasq.init: initial value of sigmasq
+  # parameter w_init: initial value of pi
+  # parameter mu_init: initial value of mu
+  # parameter sigmasq_init: initial value of sigmasq
   # parameter G: number of components
-
-  # Stop condition: change in sum of mu's and sigma's less than e.min
-  e.min = 0.000001
-
-  # List of parameters
-  w.iter       = matrix(0, nrow = 1, ncol = G)
-  mu.iter      = matrix(0, nrow = 1, ncol = G)
-  sigmasq.iter = matrix(0, nrow = 1, ncol = G)
-
-  # Put initial values in list of parameters
-  w.iter[1,]       = w.init 
-  mu.iter[1,]      = mu.init
-  sigmasq.iter[1,] = sigmasq.init
-
-  # Initiate list of log likelihood, and list of sum of mu's and sigma's
-  log_liks = c(0)
-  sum_list = c(0)
-
-  # Initiate e: change in sum of mu's; b: number of iterations
-  e = 1
-  b = 1
-
-  # Main iteration of EM algorithm
-  while (e >= e.min) {
   
+  # Stop condition: change in sum of mu's and sigma's less than e_min
+  e_min <- 0.000001
+  
+  # List of parameters
+  w_iter       <- matrix(0, nrow = 1, ncol = G)
+  mu_iter      <- matrix(0, nrow = 1, ncol = G)
+  sigmasq_iter <- matrix(0, nrow = 1, ncol = G)
+  # Put initial values in list of parameters
+  w_iter[1,]       <- w_init 
+  mu_iter[1,]      <- mu_init
+  sigmasq_iter[1,] <- sigmasq_init
+  
+  # Initiate list of log likelihood, and list of sum of mu's and sigma's
+  log_liks <- c(0)
+  sum_list <- c(0)
+  
+  # Initiate e: change in sum of mu's; b: number of iterations
+  e <- 1
+  b <- 1
+  
+  # Main iteration of EM algorithm
+  while (e >= e_min) {
+    
     # E-step
-
     # Calculate joint probability of X and Z
-    probXZ = matrix(0, nrow = length(X), ncol = G)
+    probXZ <- matrix(0, nrow = length(X), ncol = G)
     for(k in 1:G) { 
-      probXZ[, k] = dnorm(X, mean = mu.iter[b,k], sd = sqrt(sigmasq.iter[b,k])) * w.iter[b,k] 
+      probXZ[, k] <- dnorm(X, mean = mu_iter[b,k], sd = sqrt(sigmasq_iter[b,k])) * w_iter[b,k] 
     }
-
     # Calculate conditional probability of Z given X
-    P_ik = probXZ / rowSums(probXZ)
-
+    P_ik <- probXZ / rowSums(probXZ)
     # Calculate incomplete log likelihood
-    log_liks = c(log_liks, sum(log(rowSums(probXZ))))
+    log_liks <- c(log_liks, sum(log(rowSums(probXZ))))
 
     # M-step 
-
     # Calculate estimation of parameters in each round of iteration
-    w.new = colSums(P_ik)/sum(P_ik)
-    mu.new = c(1:G)*0
+    w_new <- colSums(P_ik)/sum(P_ik)
+    
+    mu_new <- c(1:G)*0
     for (k in 1:G) { 
-      mu.new[k] = sum(P_ik[,k] * X) / sum(P_ik[,k]) 
+      mu_new[k] <- sum(P_ik[,k] * X) / sum(P_ik[,k]) 
     }
-
-    sigmasq.new = c(1:G)*0
+    
+    sigmasq_new <- c(1:G)*0
     for (k in 1:G) { 
-      sigmasq.new[k] = sum(P_ik[,k] * ((X-mu.new[k])^2))/ sum(P_ik[,k]) 
+      sigmasq_new[k] <- sum(P_ik[,k] * ((X-mu_new[k])^2))/ sum(P_ik[,k]) 
     }
-
+    
     # Put new values of parameters in list of parameters
-    w.iter = rbind(w.iter, w.new)
-    mu.iter = rbind(mu.iter, mu.new)
-    sigmasq.iter = rbind(sigmasq.iter, sigmasq.new)
-
+    w_iter <- rbind(w_iter, w_new)
+    mu_iter <- rbind(mu_iter, mu_new)
+    sigmasq_iter <- rbind(sigmasq_iter, sigmasq_new)
+    
     # Renew list of sum of mu's and sigma's
-    sum_list = c(sum_list, sum(c(mu.new, sqrt(sigmasq.new))))
-
+    sum_list <- c(sum_list, sum(c(mu_new, sqrt(sigmasq_new))))
     # Calculate change in sum of mu's and sigma's
-    e = sum_list[length(sum_list)] - sum_list[length(sum_list) - 1]
-
+    e <- sum_list[length(sum_list)] - sum_list[length(sum_list) - 1]
+    
     # Reset b
-    b = b + 1
-
+    b <- b + 1
+    
     } 
-
+  
   # Return estimation and necessary quantities
-  return(list(w.iter=w.iter, 
-	      mu.iter=mu.iter, 
-	      sigmasq.iter=sigmasq.iter, 
+  return(list(w_iter=w_iter, 
+              mu_iter=mu_iter, 
+              sigmasq_iter=sigmasq_iter, 
               log_liks=log_liks, 
-	      P_ik = P_ik, 
-	      probXZ = probXZ))
-
+              P_ik = P_ik, 
+              probXZ = probXZ
+              )
+         )
+  
 }
-
 ```
 
 Then, we consider initial values.
@@ -178,26 +174,27 @@ Then, we run EM algorithm on the image data, with initial values
 
 ```{r}
 # Change data into an one dimensional vector
-X = as.vector(I)
-
+X <- as.vector(I)
 # EM algorithm on the image data
-EM_estimation = GGM.EM(X,
-		       w.init=c(0.25,0.5,0.25),
-		       mu.init=c(0.20,0.85,0.70),
-                       sigmasq.init=c(0.001,0.001,0.01),
-		       G=3)
+EM_estimation <- GGM.EM(X,
+                        w_init=c(0.25,0.5,0.25),
+                        mu_init=c(0.20,0.85,0.70),
+                        sigmasq_init=c(0.001,0.001,0.01),
+                        G=3
+                        )
 
+para_estimation <- round(cbind(EM_estimation$mu_iter, 
+                               sqrt(EM_estimation$sigmasq_iter), 
+                               EM_estimation$w_iter),
+                         4)
 ```
 
 Then we have a look of parameter estimation in each round of iteration
 
 ```{r}
-para_estimation = round(cbind(EM_estimation$mu.iter, 
-                              sqrt(EM_estimation$sigmasq.iter), 
-                              EM_estimation$w.iter),4)
-
-colnames(para_estimation) = c("mu1","mu2","mu3","sigma1","sigma2","sigma3","pi1","pi2","pi3")
-rownames(para_estimation) = paste("Iter", 0:(nrow(para_estimation)-1))
+# Parameter estimation - iteration
+colnames(para_estimation) <- c("mu1","mu2","mu3","sigma1","sigma2","sigma3","pi1","pi2","pi3")
+rownames(para_estimation) <- paste("Iter", 0:(nrow(para_estimation)-1))
 print(para_estimation)
 ```
 
@@ -207,10 +204,10 @@ print(para_estimation)
 Then, we look at the final parameter estimated.
 
 ```{r}
-# Parameter estimation
-mu_final = EM_estimation$mu.iter[nrow(EM_estimation$mu.iter),]
-sigma_final = sqrt(EM_estimation$sigmasq.iter[nrow(EM_estimation$sigmasq.iter),])
-p_final = EM_estimation$w.iter[nrow(EM_estimation$w.iter),]
+# Parameter estimation - final
+mu_final <- EM_estimation$mu_iter[nrow(EM_estimation$mu_iter),]
+sigma_final <- sqrt(EM_estimation$sigmasq_iter[nrow(EM_estimation$sigmasq_iter),])
+p_final <- EM_estimation$w_iter[nrow(EM_estimation$w_iter),]
 
 # Show the parameter estimation
 print(round(c(mu_final, sigma_final, p_final),4))
@@ -225,14 +222,18 @@ Then, we classify each pixel into their distributions based on their posterior p
 
 ```{r
 # Classify pixels into their estimated components
-G = c(1:length(X))*0
-P_ik = EM_estimation$P_ik
-probXZ = EM_estimation$probXZ
-for (i in 1:length(X)) { G[i] = which.max(P_ik[i,]) }
+G <- c(1:length(X))*0
+P_ik <- EM_estimation$P_ik
+probXZ <- EM_estimation$probXZ
+for (i in 1:length(X)) { 
+  G[i] <- which.max(P_ik[i,]) 
+  }
 
 # pdf of each components multiplied by their mean
-pdf = c(1:length(X))*0
-for (i in 1:length(X)) { pdf[i] = sum(probXZ[i,1:3] / sum(probXZ[i,])  * mu_final[1:3]) }
+pdf <- c(1:length(X))*0
+for (i in 1:length(X)) { 
+  pdf[i] <- sum(probXZ[i,1:3] / sum(probXZ[i,])  * mu_final[1:3]) 
+  }
 ```
 
 Then we plot the labeled pixels.
