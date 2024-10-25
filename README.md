@@ -1,9 +1,11 @@
 # Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
 
+## Project Introduction
 In this project, we will implement the Expectation-Maximization (EM) algorithm to model the intensity distribution of an image. Specifically, we assume that the grayscale values of all pixels in the image follow a Gaussian Mixture Model (GMM) using three probability density functions (PDFs) with varying standard deviations, corresponding to the person, the camera, and the background. 
 
 The task involves first implementing the EM algorithm for GMM and then applying it iteratively to the image data to estimate the parameters (means, standard deviations, and mixing probabilities) for each Gaussian component. Additionally, the final part of the project requires assigning each pixel in the image to one of the Gaussian distributions based on the estimated parameters and visualizing the labeled image to compare it with the provided reference output. The complete code is included in 'em_algorithm.r'.
 
+## Prepare Data
 First, we import necessary packages and load data into R.
 
 ```{r
@@ -25,6 +27,7 @@ plot(density(I))
 
 ![3614ac73-4555-49ee-91b1-b77ecd26799f](https://github.com/user-attachments/assets/1d99d2d2-12ca-45cd-89c7-ac2818b3593e)
 
+## EM for GMM Formulation
 In case of a Gaussian Mixture Model (GGM) $Y_i$ with 3 components, we have $Y_i|Z_i=k \sim N(\mu_k,\sigma^2_k)$, where $Z_i$ takes values $1,2,3$, with probability $\pi_1, \pi_2, 1-\pi_1-\pi_2$ respectively. The parameters to be estimated by EM algorithm is $\theta = (\pi_1, \pi_2,\mu_1,\mu_2,\mu_3,\sigma^2_1,\sigma^2_2,\sigma^2_3)$.
 
 The joint pdf of $Y_i$ and $Z_i$ is:
@@ -41,44 +44,37 @@ In E-step of EM algorithm, the expectation of complete log likelihood function i
 
 ![CodeCogsEqn (2)](https://github.com/user-attachments/assets/7e4cbe72-d0fb-4e77-abd3-fe96511c39b9)
 
-
 In M-step of EM algorithm, we take derivative of $Q(\theta|\theta^{(m)})$ w.r.t each parameters in $\theta = (\pi_1, \pi_2,\mu_1,\mu_2,\mu_3,\sigma^2_1,\sigma^2_2,\sigma^2_3)$ to derive expressions for estimators.
 
 In terms of $\pi_j's$, for $j=1,2$ (we have $\pi_3=1-\pi_1-\pi_2$):
 
 ![CodeCogsEqn (3)](https://github.com/user-attachments/assets/f8422a5f-77b3-42df-a329-c1063d240088)
 
-
 Then, we have a equation system with 2 equations and 2 unknowns.
 
 ![CodeCogsEqn (4)](https://github.com/user-attachments/assets/8449b715-2cb0-44ba-8b05-368abdc95fda)
-
 
 Solving this system give us, at (m+1)th round of iteration, for $j=1,2,3$:
 
 ![CodeCogsEqn (5)](https://github.com/user-attachments/assets/0385f238-a3c3-4511-bef6-8af649099e1f)
 
-
 In terms of $\mu_j's$, for $j=1,2,3$:
 
 ![CodeCogsEqn (6)](https://github.com/user-attachments/assets/9b89a823-e1c3-4c99-b325-95f63e43f3aa)
-
 
 Solving this equation gives us, at (m+1)th round of iteration, for $j=1,2,3$:
 
 ![CodeCogsEqn (7)](https://github.com/user-attachments/assets/be6e2ada-b24e-4136-ae9b-ccf9122d63d7)
 
-
 In terms of $\sigma^2_j$'s, for $j=1,2,3$:
 
 ![CodeCogsEqn (8)](https://github.com/user-attachments/assets/f16b4d42-6bd3-4bc1-9204-c9004910f754)
-
 
 Solving this equation gives us, at (m+1)th round of iteration, for $j=1,2,3$:
 
 ![CodeCogsEqn (9)](https://github.com/user-attachments/assets/5d97024e-26ee-4808-8e3e-8c452e40e727)
 
-
+## EM for GMM Realization
 Having parameter estimations, in each round of iteration, we can implement EM algorithm in R. First, we build function of EM algorithm:
 
 ```{r}
@@ -166,7 +162,8 @@ GGM.EM <- function(X, w_init, mu_init, sigmasq_init, G) {
 }
 ```
 
-Then, we consider initial values.
+## Implement EM on Data
+First, we consider initial values. 
 
 From the density plot, we see there are two clear peaks in density of data: 1st component has mean around 0.2 and second component has mean around 0.85. The third component is not clear, so we suspect that it is blended within distribution of the second component. So, we set the mean of third component to be 0.7, where there is a tiny fluctuation in density plot. So we set initial mean (0.2, 0.85, 0.7).
 
