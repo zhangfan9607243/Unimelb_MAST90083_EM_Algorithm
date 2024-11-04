@@ -1,5 +1,8 @@
 # Unimelb MAST90083 EM Algorithm Implementation for Image Recognition
 
+## Acknowledgement
+I would like to extend my sincere gratitude to the Unimelb MAST90083 2021S2 teaching team for providing me with the opportunity to work on this project, as well as for their guidance and feedback on my work.
+
 ## Project Introduction
 In this project, we will implement the Expectation-Maximization (EM) algorithm to model the intensity distribution of an image. Specifically, we assume that the grayscale values of all pixels in the image follow a Gaussian Mixture Model (GMM) using three probability density functions (PDFs) with varying standard deviations, corresponding to the person, the camera, and the background. 
 
